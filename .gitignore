@@ -1,1 +1,6 @@
-.mvn/wrapper/maven-wrapper.jartarget/*.log.idea/*.iml
+.mvn/wrapper/maven-wrapper.jar
+target/
+bin/
+*.log
+.idea/
+*.iml

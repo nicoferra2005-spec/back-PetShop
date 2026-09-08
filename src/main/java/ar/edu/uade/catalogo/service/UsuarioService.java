@@ -26,8 +26,8 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public List<Usuario> findAllUsuarios() {
-        return usuarioRepository.findAll();
+    public List<UsuarioResponseDTO> findAllUsuarios() {
+        return usuarioRepository.findAll().stream().map(this::toResponseDTO).toList();
     }
 
     public UsuarioResponseDTO registrarUsuario(RegisterRequest registerRequest) {

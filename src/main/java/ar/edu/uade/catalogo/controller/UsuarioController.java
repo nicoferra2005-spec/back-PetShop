@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.edu.uade.catalogo.dto.LoginRequest;
 import ar.edu.uade.catalogo.dto.RegisterRequest;
 import ar.edu.uade.catalogo.dto.UsuarioResponseDTO;
-import ar.edu.uade.catalogo.model.Usuario;
 import ar.edu.uade.catalogo.service.UsuarioService;
 
 // http://localhost:8080/api/usuarios
@@ -31,7 +30,7 @@ public class UsuarioController {
 
     // get http://localhost:8080/api/usuarios
     @GetMapping()
-    public List<Usuario> findAllUsuarios() {
+    public List<UsuarioResponseDTO> findAllUsuarios() {
         return usuarioService.findAllUsuarios();
     }
 

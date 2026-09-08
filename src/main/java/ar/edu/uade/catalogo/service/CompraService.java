@@ -23,6 +23,7 @@ import ar.edu.uade.catalogo.repository.ProductoRepository;
 import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class CompraService {
     private final CarritoRepository carritoRepository;
     private final CompraRepository compraRepository;
@@ -33,6 +34,22 @@ public class CompraService {
         this.carritoRepository = carritoRepository;
         this.compraRepository = compraRepository;
         this.productoRepository = productoRepository;
+    }
+
+    public List<CompraResponse> listar(Long usuarioId) {
+        List<Compra> compras = usuarioId == null
+                ? compraRepository.findAllByOrderByRealizadaEnDesc()
+                : compraRepository.findByCompradorIdOrderByRealizadaEnDesc(usuarioId);
+        return compras.stream().map(this::toResponse).toList();
+    }
+
+    public CompraResponse buscarPorId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id de la compra es obligatorio");
+        }
+        Compra compra = compraRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe la compra con id: " + id));
+        return toResponse(compra);
     }
 
     @Transactional(rollbackOn = Exception.class)

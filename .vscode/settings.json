@@ -1,0 +1,6 @@
+{
+  "java.configuration.maven.userSettings": "${workspaceFolder}/.mvn/settings-tp.xml",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.maven.enabled": true,
+  "java.autobuild.enabled": true
+}
