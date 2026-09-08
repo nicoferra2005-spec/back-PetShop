@@ -167,6 +167,9 @@ public class ProductoService {
         if (request.nombre() == null || request.nombre().isBlank()) {
             throw new IllegalArgumentException("El nombre del producto es obligatorio");
         }
+        if (request.descripcion() == null || request.descripcion().isBlank()) {
+            throw new IllegalArgumentException("La descripcion del producto es obligatoria");
+        }
         if (request.precio() == null || request.precio().compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("El precio del producto debe ser mayor o igual a 0");
         }
