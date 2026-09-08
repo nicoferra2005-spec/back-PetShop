@@ -38,6 +38,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
+    @ExceptionHandler(CarritoVacioException.class)
+    public ResponseEntity<String> manejarCarritoVacio(CarritoVacioException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<String> manejarStockInsuficiente(StockInsuficienteException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProductoNoDisponibleException.class)
+    public ResponseEntity<String> manejarProductoNoDisponible(ProductoNoDisponibleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> manejarArgumentoInvalido(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());

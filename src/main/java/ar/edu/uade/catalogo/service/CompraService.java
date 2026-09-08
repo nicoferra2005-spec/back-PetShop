@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.uade.catalogo.dto.CompraResponse;
 import ar.edu.uade.catalogo.dto.DetalleCompraResponse;
+import ar.edu.uade.catalogo.exception.CarritoVacioException;
+import ar.edu.uade.catalogo.exception.ProductoNoDisponibleException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
+import ar.edu.uade.catalogo.exception.StockInsuficienteException;
 import ar.edu.uade.catalogo.model.Carrito;
 import ar.edu.uade.catalogo.model.Compra;
 import ar.edu.uade.catalogo.model.DetalleCompra;
@@ -42,7 +45,7 @@ public class CompraService {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "El usuario con id " + usuarioId + " no tiene un carrito"));
         if (carrito.getItems().isEmpty()) {
-            throw new IllegalArgumentException("El carrito debe tener al menos un producto para realizar la compra");
+            throw new CarritoVacioException("El carrito debe tener al menos un producto para realizar la compra");
         }
 
         Compra compra = new Compra();
@@ -58,10 +61,10 @@ public class CompraService {
                 throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
             }
             if (!producto.isDisponible()) {
-                throw new IllegalArgumentException("El producto " + producto.getNombre() + " no esta disponible");
+                throw new ProductoNoDisponibleException("El producto " + producto.getNombre() + " no esta disponible");
             }
             if (cantidad > producto.getStock()) {
-                throw new IllegalArgumentException(
+                throw new StockInsuficienteException(
                         "Stock insuficiente para " + producto.getNombre() + ". Disponible: " + producto.getStock());
             }
 
