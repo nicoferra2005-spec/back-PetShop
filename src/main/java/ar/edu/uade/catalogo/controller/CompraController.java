@@ -24,13 +24,13 @@ public class CompraController {
     }
 
     @GetMapping
-    public List<CompraResponse> listar(@RequestParam(required = false) Long usuarioId) {
-        return compraService.listar(usuarioId);
+    public ResponseEntity<List<CompraResponse>> listar(@RequestParam(required = false) Long usuarioId) {
+        return ResponseEntity.ok(compraService.listar(usuarioId));
     }
 
     @GetMapping("/{id}")
-    public CompraResponse buscarPorId(@PathVariable Long id) {
-        return compraService.buscarPorId(id);
+    public ResponseEntity<CompraResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(compraService.buscarPorId(id));
     }
 
     @PostMapping("/checkout/{usuarioId}")

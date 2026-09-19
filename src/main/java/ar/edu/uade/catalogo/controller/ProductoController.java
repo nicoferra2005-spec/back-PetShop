@@ -30,18 +30,20 @@ public class ProductoController {
     }
 
     @GetMapping
-    public List<ProductoResponse> listar(@RequestParam(defaultValue = "false") boolean soloDisponibles,
+    public ResponseEntity<List<ProductoResponse>> listar(@RequestParam(defaultValue = "false") boolean soloDisponibles,
             @RequestParam(required = false) Long categoriaId,
             @RequestParam(required = false) Long marcaId,
             @RequestParam(required = false) Long especieId,
             @RequestParam(required = false) Long creadorId,
             @RequestParam(required = false) String nombre) {
-        return productoService.listar(soloDisponibles, categoriaId, marcaId, especieId, creadorId, nombre);
+        List<ProductoResponse> productos = productoService.listar(soloDisponibles, categoriaId, marcaId, especieId,
+                creadorId, nombre);
+        return ResponseEntity.ok(productos);
     }
 
     @GetMapping("/{id}")
-    public ProductoResponse buscarPorId(@PathVariable Long id) {
-        return productoService.buscarPorId(id);
+    public ResponseEntity<ProductoResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(productoService.buscarPorId(id));
     }
 
     @PostMapping
@@ -50,15 +52,15 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ProductoResponse actualizar(@PathVariable Long id, @RequestParam Long usuarioId,
+    public ResponseEntity<ProductoResponse> actualizar(@PathVariable Long id, @RequestParam Long usuarioId,
             @RequestBody ProductoRequest request) {
-        return productoService.actualizar(id, request, usuarioId);
+        return ResponseEntity.ok(productoService.actualizar(id, request, usuarioId));
     }
 
     @PatchMapping("/{id}/stock")
-    public ProductoResponse actualizarStock(@PathVariable Long id, @RequestParam Long usuarioId,
+    public ResponseEntity<ProductoResponse> actualizarStock(@PathVariable Long id, @RequestParam Long usuarioId,
             @RequestBody ActualizarStockRequest request) {
-        return productoService.actualizarStock(id, request, usuarioId);
+        return ResponseEntity.ok(productoService.actualizarStock(id, request, usuarioId));
     }
 
     @DeleteMapping("/{id}")

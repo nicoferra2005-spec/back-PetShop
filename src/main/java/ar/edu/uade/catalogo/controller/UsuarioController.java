@@ -30,8 +30,8 @@ public class UsuarioController {
 
     // get http://localhost:8080/api/usuarios
     @GetMapping()
-    public List<UsuarioResponseDTO> findAllUsuarios() {
-        return usuarioService.findAllUsuarios();
+    public ResponseEntity<List<UsuarioResponseDTO>> findAllUsuarios() {
+        return ResponseEntity.ok(usuarioService.findAllUsuarios());
     }
 
     // get http://localhost:8080/api/usuarios/1

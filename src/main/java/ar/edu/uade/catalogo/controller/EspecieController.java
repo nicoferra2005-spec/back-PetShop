@@ -27,13 +27,13 @@ public class EspecieController {
     }
 
     @GetMapping
-    public List<EspecieResponse> listar() {
-        return especieService.listar();
+    public ResponseEntity<List<EspecieResponse>> listar() {
+        return ResponseEntity.ok(especieService.listar());
     }
 
     @GetMapping("/{id}")
-    public EspecieResponse buscarPorId(@PathVariable Long id) {
-        return especieService.buscarPorId(id);
+    public ResponseEntity<EspecieResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(especieService.buscarPorId(id));
     }
 
     @PostMapping
@@ -42,8 +42,8 @@ public class EspecieController {
     }
 
     @PutMapping("/{id}")
-    public EspecieResponse actualizar(@PathVariable Long id, @RequestBody EspecieRequest request) {
-        return especieService.actualizar(id, request);
+    public ResponseEntity<EspecieResponse> actualizar(@PathVariable Long id, @RequestBody EspecieRequest request) {
+        return ResponseEntity.ok(especieService.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")

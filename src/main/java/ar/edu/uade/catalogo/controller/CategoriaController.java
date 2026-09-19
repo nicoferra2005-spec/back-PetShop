@@ -28,13 +28,13 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public List<CategoriaResponse> listar(@RequestParam(defaultValue = "false") boolean soloActivas) {
-        return categoriaService.listar(soloActivas);
+    public ResponseEntity<List<CategoriaResponse>> listar(@RequestParam(defaultValue = "false") boolean soloActivas) {
+        return ResponseEntity.ok(categoriaService.listar(soloActivas));
     }
 
     @GetMapping("/{id}")
-    public CategoriaResponse buscarPorId(@PathVariable Long id) {
-        return categoriaService.buscarPorId(id);
+    public ResponseEntity<CategoriaResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(categoriaService.buscarPorId(id));
     }
 
     @PostMapping
@@ -43,8 +43,9 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public CategoriaResponse actualizar(@PathVariable Long id, @RequestBody CategoriaRequest request) {
-        return categoriaService.actualizar(id, request);
+    public ResponseEntity<CategoriaResponse> actualizar(@PathVariable Long id,
+            @RequestBody CategoriaRequest request) {
+        return ResponseEntity.ok(categoriaService.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")

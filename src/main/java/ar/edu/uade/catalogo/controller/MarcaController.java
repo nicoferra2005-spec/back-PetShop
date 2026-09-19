@@ -28,13 +28,13 @@ public class MarcaController {
     }
 
     @GetMapping
-    public List<MarcaResponse> listar(@RequestParam(defaultValue = "false") boolean soloActivas) {
-        return marcaService.listar(soloActivas);
+    public ResponseEntity<List<MarcaResponse>> listar(@RequestParam(defaultValue = "false") boolean soloActivas) {
+        return ResponseEntity.ok(marcaService.listar(soloActivas));
     }
 
     @GetMapping("/{id}")
-    public MarcaResponse buscarPorId(@PathVariable Long id) {
-        return marcaService.buscarPorId(id);
+    public ResponseEntity<MarcaResponse> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(marcaService.buscarPorId(id));
     }
 
     @PostMapping
@@ -43,8 +43,8 @@ public class MarcaController {
     }
 
     @PutMapping("/{id}")
-    public MarcaResponse actualizar(@PathVariable Long id, @RequestBody MarcaRequest request) {
-        return marcaService.actualizar(id, request);
+    public ResponseEntity<MarcaResponse> actualizar(@PathVariable Long id, @RequestBody MarcaRequest request) {
+        return ResponseEntity.ok(marcaService.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")

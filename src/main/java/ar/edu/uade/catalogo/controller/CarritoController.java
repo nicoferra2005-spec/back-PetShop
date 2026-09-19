@@ -1,5 +1,6 @@
 package ar.edu.uade.catalogo.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,28 +25,31 @@ public class CarritoController {
     }
 
     @GetMapping("/{usuarioId}")
-    public CarritoResponse verCarrito(@PathVariable Long usuarioId) {
-        return carritoService.verCarrito(usuarioId);
+    public ResponseEntity<CarritoResponse> verCarrito(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(carritoService.verCarrito(usuarioId));
     }
 
     @PostMapping("/{usuarioId}/items")
-    public CarritoResponse agregarProducto(@PathVariable Long usuarioId, @RequestBody ItemCarritoRequest request) {
-        return carritoService.agregarProducto(usuarioId, request);
+    public ResponseEntity<CarritoResponse> agregarProducto(@PathVariable Long usuarioId,
+            @RequestBody ItemCarritoRequest request) {
+        return ResponseEntity.ok(carritoService.agregarProducto(usuarioId, request));
     }
 
     @PutMapping("/{usuarioId}/items/{itemId}")
-    public CarritoResponse actualizarCantidad(@PathVariable Long usuarioId, @PathVariable Long itemId,
+    public ResponseEntity<CarritoResponse> actualizarCantidad(@PathVariable Long usuarioId, @PathVariable Long itemId,
             @RequestBody CantidadRequest request) {
-        return carritoService.actualizarCantidad(usuarioId, itemId, request == null ? null : request.cantidad());
+        CarritoResponse carrito = carritoService.actualizarCantidad(usuarioId, itemId,
+                request == null ? null : request.cantidad());
+        return ResponseEntity.ok(carrito);
     }
 
     @DeleteMapping("/{usuarioId}/items/{itemId}")
-    public CarritoResponse eliminarProducto(@PathVariable Long usuarioId, @PathVariable Long itemId) {
-        return carritoService.eliminarProducto(usuarioId, itemId);
+    public ResponseEntity<CarritoResponse> eliminarProducto(@PathVariable Long usuarioId, @PathVariable Long itemId) {
+        return ResponseEntity.ok(carritoService.eliminarProducto(usuarioId, itemId));
     }
 
     @DeleteMapping("/{usuarioId}")
-    public CarritoResponse vaciarCarrito(@PathVariable Long usuarioId) {
-        return carritoService.vaciarCarrito(usuarioId);
+    public ResponseEntity<CarritoResponse> vaciarCarrito(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(carritoService.vaciarCarrito(usuarioId));
     }
 }
