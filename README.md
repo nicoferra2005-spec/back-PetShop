@@ -18,6 +18,38 @@ El proyecto implementa la capa de persistencia sobre el modelo relacional del tr
 - Lombok
 - Maven Wrapper
 
+## Estructura del proyecto
+
+Los paquetes de la aplicación se encuentran bajo `ar.edu.uade.catalogo` y
+separan las responsabilidades de esta forma:
+
+- `controller`: endpoints REST.
+- `service`: casos de uso y reglas de negocio.
+- `repository`: acceso a datos mediante Spring Data JPA y query methods.
+- `model`: entidades JPA persistentes.
+- `dto`: contratos HTTP de entrada y salida.
+- `exception`: excepciones propias y manejo global de errores.
+- `config`: configuraciones transversales, preparado para futuras clases de
+  configuración.
+- `security`: preparado para las clases de autenticación, autorización,
+  roles, `UserDetails` y codificación de contraseñas.
+
+### Contratos DTO
+
+Los controllers no reciben ni devuelven entidades JPA. Los contratos se
+mantienen en `dto` con esta convención:
+
+- Entrada: `RegisterRequest`, `LoginRequest`, `ProductoRequest`,
+  `CategoriaRequest`, `MarcaRequest`, `EspecieRequest`, `ItemCarritoRequest`,
+  `CantidadRequest`, `ActualizarStockRequest` e `ImagenProductoRequest`.
+- Salida: `UsuarioResponseDTO`, `ProductoResponse`, `CategoriaResponse`,
+  `MarcaResponse`, `EspecieResponse`, `CarritoResponse`,
+  `ItemCarritoResponse`, `CompraResponse`, `DetalleCompraResponse`,
+  `ImagenProductoResponse` y `CreadorResponse`.
+
+El frontend deberá definir tipos equivalentes para las respuestas de la API;
+no comparte entidades ni código Java con este repositorio.
+
 ## Configuracion
 
 La aplicacion usa MySQL por defecto:
