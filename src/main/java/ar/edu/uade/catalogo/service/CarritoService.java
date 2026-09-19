@@ -15,6 +15,7 @@ import ar.edu.uade.catalogo.model.ItemCarrito;
 import ar.edu.uade.catalogo.model.Producto;
 import ar.edu.uade.catalogo.model.Usuario;
 import ar.edu.uade.catalogo.repository.CarritoRepository;
+import ar.edu.uade.catalogo.repository.ItemCarritoRepository;
 import ar.edu.uade.catalogo.repository.ProductoRepository;
 import ar.edu.uade.catalogo.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -25,12 +26,14 @@ public class CarritoService {
     private final CarritoRepository carritoRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ItemCarritoRepository itemCarritoRepository;
 
     public CarritoService(CarritoRepository carritoRepository, ProductoRepository productoRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository, ItemCarritoRepository itemCarritoRepository) {
         this.carritoRepository = carritoRepository;
         this.productoRepository = productoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.itemCarritoRepository = itemCarritoRepository;
     }
 
     public CarritoResponse verCarrito(Long usuarioId) {
@@ -51,9 +54,8 @@ public class CarritoService {
         }
 
         Carrito carrito = obtenerOCrearCarrito(usuarioId);
-        Optional<ItemCarrito> itemExistente = carrito.getItems().stream()
-                .filter(item -> item.getProducto().getId().equals(producto.getId()))
-                .findFirst();
+        Optional<ItemCarrito> itemExistente = itemCarritoRepository
+                .findFirstByCarrito_IdAndProducto_Id(carrito.getId(), producto.getId());
 
         int cantidadFinal = itemExistente.map(ItemCarrito::getCantidad).orElse(0) + request.cantidad();
         validarStockDisponible(producto, cantidadFinal);
@@ -118,9 +120,7 @@ public class CarritoService {
         if (itemId == null) {
             throw new IllegalArgumentException("El id del item es obligatorio");
         }
-        return carrito.getItems().stream()
-                .filter(item -> item.getId().equals(itemId))
-                .findFirst()
+        return itemCarritoRepository.findByIdAndCarrito_Id(itemId, carrito.getId())
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "El carrito no tiene un item con id: " + itemId));
     }
