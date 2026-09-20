@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import ar.edu.uade.catalogo.dto.CarritoResponse;
 import ar.edu.uade.catalogo.dto.ItemCarritoRequest;
 import ar.edu.uade.catalogo.dto.ItemCarritoResponse;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
+import ar.edu.uade.catalogo.exception.ProductoNoDisponibleException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
+import ar.edu.uade.catalogo.exception.StockInsuficienteException;
 import ar.edu.uade.catalogo.model.Carrito;
 import ar.edu.uade.catalogo.model.ItemCarrito;
 import ar.edu.uade.catalogo.model.Producto;
@@ -42,15 +45,15 @@ public class CarritoService {
 
     public CarritoResponse agregarProducto(Long usuarioId, ItemCarritoRequest request) {
         if (request == null || request.productoId() == null) {
-            throw new IllegalArgumentException("El id del producto es obligatorio");
+            throw new DatosInvalidosException("El id del producto es obligatorio");
         }
         if (request.cantidad() == null || request.cantidad() <= 0) {
-            throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
+            throw new DatosInvalidosException("La cantidad debe ser mayor a 0");
         }
 
         Producto producto = obtenerProducto(request.productoId());
         if (!producto.isDisponible()) {
-            throw new IllegalArgumentException("El producto no esta disponible");
+            throw new ProductoNoDisponibleException("El producto no esta disponible");
         }
 
         Carrito carrito = obtenerOCrearCarrito(usuarioId);
@@ -75,7 +78,7 @@ public class CarritoService {
 
     public CarritoResponse actualizarCantidad(Long usuarioId, Long itemId, Integer cantidad) {
         if (cantidad == null || cantidad <= 0) {
-            throw new IllegalArgumentException("La cantidad debe ser mayor a 0. Para quitar el producto, usa eliminar");
+            throw new DatosInvalidosException("La cantidad debe ser mayor a 0. Para quitar el producto, usa eliminar");
         }
 
         Carrito carrito = obtenerCarritoExistente(usuarioId);
@@ -118,7 +121,7 @@ public class CarritoService {
 
     private ItemCarrito obtenerItem(Carrito carrito, Long itemId) {
         if (itemId == null) {
-            throw new IllegalArgumentException("El id del item es obligatorio");
+            throw new DatosInvalidosException("El id del item es obligatorio");
         }
         return itemCarritoRepository.findByIdAndCarrito_Id(itemId, carrito.getId())
                 .orElseThrow(() -> new RecursoNoEncontradoException(
@@ -132,7 +135,7 @@ public class CarritoService {
 
     private Usuario obtenerUsuario(Long usuarioId) {
         if (usuarioId == null) {
-            throw new IllegalArgumentException("El id del usuario es obligatorio");
+            throw new DatosInvalidosException("El id del usuario es obligatorio");
         }
         return usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe el usuario con id: " + usuarioId));
@@ -140,7 +143,7 @@ public class CarritoService {
 
     private void validarStockDisponible(Producto producto, int cantidadPedida) {
         if (cantidadPedida > producto.getStock()) {
-            throw new IllegalArgumentException(
+            throw new StockInsuficienteException(
                     "Stock insuficiente para " + producto.getNombre() + ". Disponible: " + producto.getStock());
         }
     }

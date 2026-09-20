@@ -18,6 +18,7 @@ import ar.edu.uade.catalogo.dto.ImagenProductoResponse;
 import ar.edu.uade.catalogo.dto.MarcaResponse;
 import ar.edu.uade.catalogo.dto.ProductoRequest;
 import ar.edu.uade.catalogo.dto.ProductoResponse;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.OperacionNoPermitidaException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
 import ar.edu.uade.catalogo.model.Categoria;
@@ -68,7 +69,7 @@ public class ProductoService {
     public ProductoResponse crear(ProductoRequest request) {
         validarDatos(request);
         if (request.creadorId() == null) {
-            throw new IllegalArgumentException("El usuario creador del producto es obligatorio");
+            throw new DatosInvalidosException("El usuario creador del producto es obligatorio");
         }
         validarImagenes(request.imagenes(), true);
 
@@ -112,14 +113,14 @@ public class ProductoService {
         Producto producto = obtener(id);
         validarCreador(producto, usuarioId);
         if (request == null || (request.stock() == null && request.ajuste() == null)) {
-            throw new IllegalArgumentException("Indica el stock nuevo o el ajuste a aplicar");
+            throw new DatosInvalidosException("Indica el stock nuevo o el ajuste a aplicar");
         }
         if (request.stock() != null && request.ajuste() != null) {
-            throw new IllegalArgumentException("Envia el stock nuevo o el ajuste, pero no los dos juntos");
+            throw new DatosInvalidosException("Envia el stock nuevo o el ajuste, pero no los dos juntos");
         }
         int nuevoStock = request.stock() != null ? request.stock() : producto.getStock() + request.ajuste();
         if (nuevoStock < 0) {
-            throw new IllegalArgumentException("El stock no puede quedar negativo");
+            throw new DatosInvalidosException("El stock no puede quedar negativo");
         }
         producto.setStock(nuevoStock);
         return toResponse(productoRepository.save(producto));
@@ -136,7 +137,7 @@ public class ProductoService {
 
     private Producto obtener(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id del producto es obligatorio");
+            throw new DatosInvalidosException("El id del producto es obligatorio");
         }
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe el producto con id: " + id));
@@ -162,45 +163,45 @@ public class ProductoService {
 
     private void validarDatos(ProductoRequest request) {
         if (request == null) {
-            throw new IllegalArgumentException("Los datos del producto son obligatorios");
+            throw new DatosInvalidosException("Los datos del producto son obligatorios");
         }
         if (request.nombre() == null || request.nombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre del producto es obligatorio");
+            throw new DatosInvalidosException("El nombre del producto es obligatorio");
         }
         if (request.descripcion() == null || request.descripcion().isBlank()) {
-            throw new IllegalArgumentException("La descripcion del producto es obligatoria");
+            throw new DatosInvalidosException("La descripcion del producto es obligatoria");
         }
         if (request.precio() == null || request.precio().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("El precio del producto debe ser mayor o igual a 0");
+            throw new DatosInvalidosException("El precio del producto debe ser mayor o igual a 0");
         }
         if (request.stock() == null || request.stock() < 0) {
-            throw new IllegalArgumentException("El stock del producto debe ser mayor o igual a 0");
+            throw new DatosInvalidosException("El stock del producto debe ser mayor o igual a 0");
         }
         if (request.categoriaId() == null) {
-            throw new IllegalArgumentException("La categoria del producto es obligatoria");
+            throw new DatosInvalidosException("La categoria del producto es obligatoria");
         }
     }
 
     private void validarImagenes(List<ImagenProductoRequest> imagenes, boolean obligatorias) {
         if (imagenes == null) {
             if (obligatorias) {
-                throw new IllegalArgumentException("El producto debe tener al menos una imagen");
+                throw new DatosInvalidosException("El producto debe tener al menos una imagen");
             }
             return;
         }
         if (imagenes.isEmpty()) {
-            throw new IllegalArgumentException("El producto debe tener al menos una imagen");
+            throw new DatosInvalidosException("El producto debe tener al menos una imagen");
         }
         for (ImagenProductoRequest imagen : imagenes) {
             if (imagen == null || imagen.ubicacion() == null || imagen.ubicacion().isBlank()) {
-                throw new IllegalArgumentException("La ubicacion de la imagen es obligatoria");
+                throw new DatosInvalidosException("La ubicacion de la imagen es obligatoria");
             }
         }
     }
 
     private void validarCreador(Producto producto, Long usuarioId) {
         if (usuarioId == null) {
-            throw new IllegalArgumentException("El id del usuario es obligatorio para gestionar el producto");
+            throw new DatosInvalidosException("El id del usuario es obligatorio para gestionar el producto");
         }
         if (producto.getCreador() == null || !producto.getCreador().getId().equals(usuarioId)) {
             throw new OperacionNoPermitidaException("Solo el usuario que publico el producto puede gestionarlo");
@@ -212,7 +213,7 @@ public class ProductoService {
             return;
         }
         if (especiesIds.contains(null)) {
-            throw new IllegalArgumentException("El id de la especie es obligatorio");
+            throw new DatosInvalidosException("El id de la especie es obligatorio");
         }
         Set<Long> idsPedidos = new LinkedHashSet<>(especiesIds);
         producto.getEspecies().removeIf(relacion -> !idsPedidos.contains(relacion.getEspecie().getId()));

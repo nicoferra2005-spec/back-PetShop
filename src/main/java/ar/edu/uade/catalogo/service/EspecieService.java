@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.uade.catalogo.dto.EspecieRequest;
 import ar.edu.uade.catalogo.dto.EspecieResponse;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
 import ar.edu.uade.catalogo.model.Especie;
 import ar.edu.uade.catalogo.repository.EspecieRepository;
@@ -32,7 +33,7 @@ public class EspecieService {
         validarNombre(request.nombre());
         String nombre = request.nombre().trim();
         if (especieRepository.existsByNombreIgnoreCase(nombre)) {
-            throw new IllegalArgumentException("Ya existe una especie con ese nombre");
+            throw new DatosInvalidosException("Ya existe una especie con ese nombre");
         }
         Especie especie = new Especie();
         especie.setNombre(nombre);
@@ -44,7 +45,7 @@ public class EspecieService {
         Especie especie = obtener(id);
         String nombre = request.nombre().trim();
         if (!especie.getNombre().equalsIgnoreCase(nombre) && especieRepository.existsByNombreIgnoreCase(nombre)) {
-            throw new IllegalArgumentException("Ya existe una especie con ese nombre");
+            throw new DatosInvalidosException("Ya existe una especie con ese nombre");
         }
         especie.setNombre(nombre);
         return toResponse(especieRepository.save(especie));
@@ -52,7 +53,7 @@ public class EspecieService {
 
     public void eliminar(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la especie es obligatorio");
+            throw new DatosInvalidosException("El id de la especie es obligatorio");
         }
         obtener(id);
         especieRepository.deleteById(id);
@@ -60,7 +61,7 @@ public class EspecieService {
 
     private Especie obtener(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la especie es obligatorio");
+            throw new DatosInvalidosException("El id de la especie es obligatorio");
         }
         return especieRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe la especie con id: " + id));
@@ -68,7 +69,7 @@ public class EspecieService {
 
     private void validarNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre de la especie es obligatorio");
+            throw new DatosInvalidosException("El nombre de la especie es obligatorio");
         }
     }
 

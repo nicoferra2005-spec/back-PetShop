@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.uade.catalogo.dto.CategoriaRequest;
 import ar.edu.uade.catalogo.dto.CategoriaResponse;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
 import ar.edu.uade.catalogo.model.Categoria;
 import ar.edu.uade.catalogo.repository.CategoriaRepository;
@@ -53,7 +54,7 @@ public class CategoriaService {
 
     public void eliminar(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la categoria es obligatorio");
+            throw new DatosInvalidosException("El id de la categoria es obligatorio");
         }
         obtener(id);
         categoriaRepository.deleteById(id);
@@ -61,7 +62,7 @@ public class CategoriaService {
 
     private Categoria obtener(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la categoria es obligatorio");
+            throw new DatosInvalidosException("El id de la categoria es obligatorio");
         }
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe la categoria con id: " + id));
@@ -69,7 +70,7 @@ public class CategoriaService {
 
     private void validarNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre de la categoria es obligatorio");
+            throw new DatosInvalidosException("El nombre de la categoria es obligatorio");
         }
     }
 

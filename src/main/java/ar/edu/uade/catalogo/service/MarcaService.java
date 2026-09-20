@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import ar.edu.uade.catalogo.dto.MarcaRequest;
 import ar.edu.uade.catalogo.dto.MarcaResponse;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
 import ar.edu.uade.catalogo.model.Marca;
 import ar.edu.uade.catalogo.repository.MarcaRepository;
@@ -51,7 +52,7 @@ public class MarcaService {
 
     public void eliminar(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la marca es obligatorio");
+            throw new DatosInvalidosException("El id de la marca es obligatorio");
         }
         obtener(id);
         marcaRepository.deleteById(id);
@@ -59,7 +60,7 @@ public class MarcaService {
 
     private Marca obtener(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la marca es obligatorio");
+            throw new DatosInvalidosException("El id de la marca es obligatorio");
         }
         return marcaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe la marca con id: " + id));
@@ -67,7 +68,7 @@ public class MarcaService {
 
     private void validarNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre de la marca es obligatorio");
+            throw new DatosInvalidosException("El nombre de la marca es obligatorio");
         }
     }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ar.edu.uade.catalogo.dto.CompraResponse;
 import ar.edu.uade.catalogo.dto.DetalleCompraResponse;
 import ar.edu.uade.catalogo.exception.CarritoVacioException;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.ProductoNoDisponibleException;
 import ar.edu.uade.catalogo.exception.RecursoNoEncontradoException;
 import ar.edu.uade.catalogo.exception.StockInsuficienteException;
@@ -45,7 +46,7 @@ public class CompraService {
 
     public CompraResponse buscarPorId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id de la compra es obligatorio");
+            throw new DatosInvalidosException("El id de la compra es obligatorio");
         }
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("No existe la compra con id: " + id));
@@ -55,7 +56,7 @@ public class CompraService {
     @Transactional(rollbackOn = Exception.class)
     public CompraResponse checkout(Long usuarioId) {
         if (usuarioId == null) {
-            throw new IllegalArgumentException("El id del usuario es obligatorio");
+            throw new DatosInvalidosException("El id del usuario es obligatorio");
         }
 
         Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
@@ -75,7 +76,7 @@ public class CompraService {
                             "No existe el producto con id: " + item.getProducto().getId()));
             int cantidad = item.getCantidad();
             if (cantidad <= 0) {
-                throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
+                throw new DatosInvalidosException("La cantidad debe ser mayor a 0");
             }
             if (!producto.isDisponible()) {
                 throw new ProductoNoDisponibleException("El producto " + producto.getNombre() + " no esta disponible");

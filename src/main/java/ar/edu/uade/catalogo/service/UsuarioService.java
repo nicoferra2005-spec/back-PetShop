@@ -9,6 +9,7 @@ import ar.edu.uade.catalogo.dto.RegisterRequest;
 import ar.edu.uade.catalogo.dto.UsuarioResponseDTO;
 import ar.edu.uade.catalogo.exception.CorreoYaRegistradoException;
 import ar.edu.uade.catalogo.exception.CredencialesInvalidasException;
+import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.NombreUsuarioYaRegistradoException;
 import ar.edu.uade.catalogo.exception.UsuarioNotFoundException;
 import ar.edu.uade.catalogo.model.Usuario;
@@ -33,7 +34,7 @@ public class UsuarioService {
     public UsuarioResponseDTO registrarUsuario(RegisterRequest registerRequest) {
         if (registerRequest.getCorreo() == null || registerRequest.getClave() == null
                 || registerRequest.getNombreUsuario() == null) {
-            throw new IllegalArgumentException("Correo, clave y nombre de usuario son obligatorios");
+            throw new DatosInvalidosException("Correo, clave y nombre de usuario son obligatorios");
         }
 
         if (usuarioRepository.existsByCorreo(registerRequest.getCorreo())) {
@@ -57,7 +58,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO login(LoginRequest loginRequest) {
         if (loginRequest.getCorreo() == null || loginRequest.getClave() == null) {
-            throw new IllegalArgumentException("Correo y clave son obligatorios");
+            throw new DatosInvalidosException("Correo y clave son obligatorios");
         }
 
         Usuario usuario = usuarioRepository.findByCorreo(loginRequest.getCorreo())
@@ -76,7 +77,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO findUsuarioByCorreo(String correo) {
         if (correo == null) {
-            throw new IllegalArgumentException("El correo no puede ser nulo");
+            throw new DatosInvalidosException("El correo no puede ser nulo");
         }
 
         Usuario usuario = usuarioRepository.findByCorreo(correo)
@@ -87,7 +88,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO findUsuarioById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El id del usuario no puede ser nulo");
+            throw new DatosInvalidosException("El id del usuario no puede ser nulo");
         }
 
         Usuario usuario = usuarioRepository.findById(id)
