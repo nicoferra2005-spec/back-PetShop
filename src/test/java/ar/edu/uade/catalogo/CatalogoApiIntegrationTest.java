@@ -121,17 +121,21 @@ class CatalogoApiIntegrationTest {
 
         login("vendedor@mail.com", "clave-incorrecta")
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$").value("Correo o clave incorrectos"));
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.path").value("/api/usuarios/login"))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.message").value("Correo o clave incorrectos"));
 
         mvc.perform(get("/api/productos/{id}", 999L))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$", containsString("No existe el producto")));
+                .andExpect(jsonPath("$.message", containsString("No existe el producto")));
 
         mvc.perform(post("/api/productos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(producto(usuarioId, categoriaId, null, null, "Alimento Premium", 10, null))))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("El producto debe tener al menos una imagen"));
+                .andExpect(jsonPath("$.message").value("El producto debe tener al menos una imagen"));
 
         Long productoId = crearProducto(usuarioId, categoriaId, null, null, "Alimento Premium", 1);
 
@@ -139,7 +143,7 @@ class CatalogoApiIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(new ItemCarritoRequest(productoId, 2))))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", containsString("Stock insuficiente")));
+                .andExpect(jsonPath("$.message", containsString("Stock insuficiente")));
 
         mvc.perform(patch("/api/productos/{id}/stock", productoId)
                 .param("usuarioId", otroUsuarioId.toString())
