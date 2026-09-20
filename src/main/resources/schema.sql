@@ -8,6 +8,17 @@ CREATE TABLE IF NOT EXISTS usuario (
     creado_en DATETIME NOT NULL,
     habilitado BOOLEAN NOT NULL
 );
+CREATE TABLE IF NOT EXISTS usuario_rol (
+    usuario_id BIGINT NOT NULL,
+    rol VARCHAR(30) NOT NULL,
+    PRIMARY KEY (usuario_id, rol),
+    CONSTRAINT usuario_rol_usuario_fk FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+);
+-- Los usuarios creados antes de que existieran los roles quedan como clientes.
+-- El NOT EXISTS hace que la sentencia sea idempotente entre arranques.
+INSERT INTO usuario_rol (usuario_id, rol)
+SELECT u.id, 'ROLE_CLIENTE' FROM usuario u
+WHERE NOT EXISTS (SELECT 1 FROM usuario_rol ur WHERE ur.usuario_id = u.id);
 CREATE TABLE IF NOT EXISTS categoria (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
