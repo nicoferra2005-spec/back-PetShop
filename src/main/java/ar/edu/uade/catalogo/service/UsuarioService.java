@@ -1,7 +1,10 @@
 package ar.edu.uade.catalogo.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import ar.edu.uade.catalogo.dto.LoginRequest;
@@ -12,6 +15,7 @@ import ar.edu.uade.catalogo.exception.CredencialesInvalidasException;
 import ar.edu.uade.catalogo.exception.DatosInvalidosException;
 import ar.edu.uade.catalogo.exception.NombreUsuarioYaRegistradoException;
 import ar.edu.uade.catalogo.exception.UsuarioNotFoundException;
+import ar.edu.uade.catalogo.model.Rol;
 import ar.edu.uade.catalogo.model.Usuario;
 import ar.edu.uade.catalogo.repository.UsuarioRepository;
 
@@ -22,9 +26,11 @@ import jakarta.transaction.Transactional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioResponseDTO> findAllUsuarios() {
@@ -45,12 +51,15 @@ public class UsuarioService {
             throw new NombreUsuarioYaRegistradoException("Ya existe un usuario registrado con ese nombre de usuario");
         }
 
-        Usuario usuario = new Usuario();
-        usuario.setNombreUsuario(registerRequest.getNombreUsuario());
-        usuario.setCorreo(registerRequest.getCorreo());
-        usuario.setClave(registerRequest.getClave());
-        usuario.setNombre(registerRequest.getNombre());
-        usuario.setApellido(registerRequest.getApellido());
+        Usuario usuario = Usuario.builder()
+                .nombreUsuario(registerRequest.getNombreUsuario())
+                .correo(registerRequest.getCorreo())
+                // La clave nunca se persiste en texto plano.
+                .clave(passwordEncoder.encode(registerRequest.getClave()))
+                .nombre(registerRequest.getNombre())
+                .apellido(registerRequest.getApellido())
+                .roles(new HashSet<>(Set.of(Rol.ROLE_CLIENTE)))
+                .build();
 
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return toResponseDTO(savedUsuario);
@@ -64,7 +73,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByCorreo(loginRequest.getCorreo())
                 .orElseThrow(() -> new CredencialesInvalidasException("Correo o clave incorrectos"));
 
-        if (!usuario.getClave().equals(loginRequest.getClave())) {
+        if (!passwordEncoder.matches(loginRequest.getClave(), usuario.getClave())) {
             throw new CredencialesInvalidasException("Correo o clave incorrectos");
         }
 
@@ -105,6 +114,7 @@ public class UsuarioService {
                 .nombre(usuario.getNombre())
                 .apellido(usuario.getApellido())
                 .habilitado(usuario.isHabilitado())
+                .roles(usuario.getRoles() == null ? Set.of() : Set.copyOf(usuario.getRoles()))
                 .build();
     }
 }

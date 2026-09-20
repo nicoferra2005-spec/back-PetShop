@@ -16,6 +16,7 @@ import ar.edu.uade.catalogo.dto.LoginRequest;
 import ar.edu.uade.catalogo.dto.RegisterRequest;
 import ar.edu.uade.catalogo.dto.UsuarioResponseDTO;
 import ar.edu.uade.catalogo.service.UsuarioService;
+import jakarta.validation.Valid;
 
 // http://localhost:8080/api/usuarios
 @RestController
@@ -50,14 +51,14 @@ public class UsuarioController {
 
     // post http://localhost:8080/api/usuarios/registro
     @PostMapping("/registro")
-    public ResponseEntity<UsuarioResponseDTO> registrarUsuario(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<UsuarioResponseDTO> registrarUsuario(@Valid @RequestBody RegisterRequest registerRequest) {
         UsuarioResponseDTO usuarioRegistrado = usuarioService.registrarUsuario(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRegistrado);
     }
 
     // post http://localhost:8080/api/usuarios/login
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponseDTO> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginRequest loginRequest) {
         UsuarioResponseDTO usuarioLogueado = usuarioService.login(loginRequest);
         return ResponseEntity.ok().body(usuarioLogueado);
     }
