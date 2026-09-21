@@ -65,7 +65,7 @@ class SeguridadUsuarioTest {
     void permiteLoguearseConLaClaveOriginal() throws Exception {
         registrar("bruno", "bruno@mail.com", "clave-secreta").andExpect(status().isCreated());
 
-        mvc.perform(post("/api/usuarios/login")
+        mvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(
                         LoginRequest.builder().correo("bruno@mail.com").clave("clave-secreta").build())))
@@ -78,7 +78,7 @@ class SeguridadUsuarioTest {
     void rechazaElLoginConLaClaveIncorrecta() throws Exception {
         registrar("carla", "carla@mail.com", "clave-secreta").andExpect(status().isCreated());
 
-        mvc.perform(post("/api/usuarios/login")
+        mvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(
                         LoginRequest.builder().correo("carla@mail.com").clave("otra-clave").build())))
@@ -88,7 +88,7 @@ class SeguridadUsuarioTest {
 
     @Test
     void devuelveBadRequestConElDetalleDeLosCamposInvalidos() throws Exception {
-        mvc.perform(post("/api/usuarios/registro")
+        mvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(RegisterRequest.builder()
                         .nombreUsuario("")
@@ -123,7 +123,7 @@ class SeguridadUsuarioTest {
     private org.springframework.test.web.servlet.ResultActions registrar(String nombreUsuario,
                                                                          String correo,
                                                                          String clave) throws Exception {
-        return mvc.perform(post("/api/usuarios/registro")
+        return mvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(RegisterRequest.builder()
                         .nombreUsuario(nombreUsuario)
