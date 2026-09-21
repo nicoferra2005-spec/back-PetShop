@@ -3,6 +3,7 @@ package ar.edu.uade.catalogo.config;
 import ar.edu.uade.catalogo.security.UsuarioDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -54,16 +55,26 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(basic -> {
                 })
-                // Todos los endpoints quedan abiertos a propósito: esta entrega cubre
-                // la base de seguridad (usuario, roles, UserDetails y PasswordEncoder),
-                // no la autorización por endpoint. Restringir acá sin un mecanismo de
-                // login end-to-end dejaría la API y el front sin poder operar.
-                // Las reglas por rol van en este mismo bloque cuando se agreguen, por
-                // ejemplo:
-                //   .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
+                // Reglas por rol: catalogo de lectura publico, gestion del catalogo
+                // (categorias/marcas/especies) solo ADMIN, listado completo de
+                // usuarios solo ADMIN, y todo lo demas requiere estar logueado
+                // (cliente o admin). El chequeo de "solo el creador puede editar
+                // su propio producto" es un chequeo de negocio aparte, resuelto en
+                // ProductoService.validarCreador, no acá.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/usuarios/registro", "/api/usuarios/login").permitAll()
-                        .anyRequest().permitAll())
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/marcas/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/especies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/categorias/**", "/api/marcas/**", "/api/especies/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categorias/**", "/api/marcas/**", "/api/especies/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categorias/**", "/api/marcas/**", "/api/especies/**")
+                        .hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 .build();
     }
 }
