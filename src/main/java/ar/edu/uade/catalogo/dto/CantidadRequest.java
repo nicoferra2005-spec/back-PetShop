@@ -1,3 +1,6 @@
 package ar.edu.uade.catalogo.dto;
-public record CantidadRequest(Integer cantidad) {
+
+public record CantidadRequest(
+        Integer cantidad
+) {
 }
