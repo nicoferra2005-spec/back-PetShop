@@ -43,6 +43,11 @@ public class CarritoService {
         return toResponse(obtenerOCrearCarrito(usuarioId));
     }
 
+    /** Listado reservado para administración; el carrito de un cliente se consulta por usuario. */
+    public List<CarritoResponse> listar() {
+        return carritoRepository.findAll().stream().map(this::toResponse).toList();
+    }
+
     public CarritoResponse agregarProducto(Long usuarioId, ItemCarritoRequest request) {
         if (request == null || request.productoId() == null) {
             throw new DatosInvalidosException("El id del producto es obligatorio");

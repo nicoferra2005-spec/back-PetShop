@@ -179,6 +179,26 @@ class CatalogoApiIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void carritoPerteneceAlUsuarioAutenticadoYElListadoEsAdministrativo() throws Exception {
+        Long propietarioId = registrarUsuario("propietario", "propietario@mail.com");
+        Long ajenoId = registrarUsuario("ajeno", "ajeno@mail.com");
+
+        mvc.perform(get("/api/carrito/{usuarioId}", propietarioId)
+                .with(httpBasic("propietario@mail.com", "123456")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.usuarioId").value(propietarioId));
+
+        mvc.perform(get("/api/carrito/{usuarioId}", ajenoId)
+                .with(httpBasic("propietario@mail.com", "123456")))
+                .andExpect(status().isForbidden());
+
+        crearAdmin();
+        mvc.perform(get("/api/carrito").with(httpBasic(ADMIN_CORREO, ADMIN_CLAVE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
     private Long registrarUsuario(String nombreUsuario, String correo) throws Exception {
         RegisterRequest request = RegisterRequest.builder()
                 .nombreUsuario(nombreUsuario)
